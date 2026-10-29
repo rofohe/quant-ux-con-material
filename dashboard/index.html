@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>komoot ratings and reviews</title>
+<style>
+:root{--paper:#fff;--card:#fff;--ink:#222;--soft:#555;--muted:#888;--line:#eee;--line2:#ddd;
+--rate:#3f6a9e;--rate-l:#eef3f9;--text:#8c96a0;--text-d:#4a535c;--text-l:#f1f3f5;--neg:#a9503f;--pos:#3f7a5a;--bench:#999}
+*{box-sizing:border-box}
+body{margin:0;background:#fff;color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif}
+.wrap{max-width:1200px;margin:0 auto;padding:24px 24px 40px}
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-bottom:12px;border-bottom:1px solid var(--line2);margin-bottom:8px}
+h1{font-size:20px;font-weight:600;margin:0}
+.sub{color:var(--muted);font-size:12px;margin-top:4px}
+.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.seg{display:inline-flex;gap:12px}
+.seg button{border:0;background:none;font:inherit;font-size:13px;color:var(--muted);padding:2px 0;cursor:pointer;border-bottom:1px solid transparent}
+.seg button.on{color:var(--ink);border-bottom-color:var(--ink)}
+.grid{display:grid;gap:32px}
+.kpis{grid-template-columns:repeat(6,1fr);gap:16px;padding:12px 0 16px;border-bottom:1px solid var(--line2)}
+.card{min-width:0}
+.tag{display:none}
+.kpi{font-size:12px;color:var(--muted)}
+.kpi .tag{display:block;font-size:12px;color:var(--muted)}
+.kpi .v{font-size:22px;color:var(--ink);margin:2px 0;font-variant-numeric:tabular-nums}
+.kpi .v small{font-size:12px;color:var(--muted)}
+.kpi .d{font-size:12px;color:var(--muted)}
+.up{color:var(--pos)}.down{color:var(--neg)}.flat{color:var(--muted)}
+.row2{grid-template-columns:2fr 1fr;margin-top:24px}
+.row3{grid-template-columns:1fr 1fr;margin-top:24px;padding-top:20px;border-top:1px solid var(--line2)}
+.row4{grid-template-columns:1.25fr 1fr;margin-top:24px;padding-top:20px;border-top:1px solid var(--line2)}
+h2{font-size:15px;font-weight:600;margin:0 0 2px}
+.cap{color:var(--muted);font-size:12px;margin-bottom:8px}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+svg{display:block;overflow:visible}
+svg text{font:11px system-ui,-apple-system,sans-serif;fill:var(--muted)}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--soft);flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:16px;height:0;border-top:2px solid var(--c);display:inline-block}
+.legend i.dash{border-top-style:dashed}
+table{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+th{font-weight:normal;color:var(--muted);text-align:right;font-size:12px;padding:4px 6px;border-bottom:1px solid var(--line2);cursor:pointer;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+tr.focal td{font-weight:600}
+tr.sel td{background:var(--text-l)}
+tbody tr.click{cursor:pointer}tbody tr.click:hover td{background:#f7f7f7}
+.bar{display:inline-block;height:6px;background:var(--text);vertical-align:middle}
+.chip{font-size:11px;color:var(--muted);white-space:nowrap}
+.term{font-weight:normal}
+.tip{position:fixed;pointer-events:none;background:#fff;color:var(--ink);border:1px solid var(--line2);font-size:12px;padding:6px 8px;opacity:0;z-index:9;max-width:260px}
+.note{color:var(--muted);font-size:11.5px;margin-top:8px}
+.empty{padding:28px 10px;text-align:center;color:var(--muted)}
+footer{margin-top:28px;color:var(--muted);font-size:11.5px;line-height:1.6;border-top:1px solid var(--line2);padding-top:12px}
+.scroll{max-height:420px;overflow:auto}
+section.grid[style]{padding-top:20px;border-top:1px solid var(--line2);margin-top:24px!important}
+@media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}.row2,.row3,.row4{grid-template-columns:1fr}}
+@media(max-width:600px){.wrap{padding:14px 16px}.kpis{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1>komoot ratings and reviews, DACH</h1>
+    <div class="sub" id="stamp"></div>
+  </div>
+  <div class="controls">
+    <div class="seg" id="storeSeg">
+      <button data-v="play">Google Play</button><button data-v="apple">App Store</button><button data-v="all">Both</button>
+    </div>
+  </div>
+</header>
+
+<section class="grid kpis" id="kpis"></section>
+
+<section class="grid row2">
+  <div class="card">
+    <div class="hd"><div><div class="tag">Ratings</div><h2>Average rating per month, komoot vs the category</h2>
+      <div class="cap" id="trendCap"></div></div>
+      <div class="seg" id="rangeSeg"><button data-v="12">12 mo</button><button data-v="24">24 mo</button><button data-v="999">All</button></div></div>
+    <div class="legend" id="trendLegend"></div>
+    <div id="trend"></div>
+  </div>
+  <div class="card">
+    <div class="tag">Ratings</div><h2>All apps</h2>
+    <div class="cap" id="leagueCap"></div>
+    <div class="scroll"><table id="league"></table></div>
+  </div>
+</section>
+
+<section class="grid row4">
+  <div class="card">
+    <div class="tag t">Review text · classifier</div><h2>Themes and the rating</h2>
+    <div class="cap" id="themeCap"></div>
+    <table id="themes"></table>
+  </div>
+  <div class="card">
+    <div class="tag t">Review text · classifier</div><h2 id="themeDetailTitle">Theme over time</h2>
+    <div class="cap">Share of komoot reviews mentioning the theme, per month; dashed = competitor category.</div>
+    <div id="themeDetail"></div>
+    <h2 style="margin-top:14px">How common vs how harsh</h2>
+    <div class="cap">Bottom right = common and harsh. Bubble size = reviews (12 mo).</div>
+    <div id="quad"></div>
+  </div>
+</section>
+
+<section class="grid row3">
+  <div class="card">
+    <div class="tag t">Review text · topics</div><h2>Words used more often</h2>
+    <div class="cap" id="topicCap"></div>
+    <div id="rising"></div>
+  </div>
+  <div class="card">
+    <div class="tag t">Review text · topics</div><h2>Word pairs used more often</h2>
+    <div class="cap">Keyword pairs appearing together in the same review, recent vs baseline share.</div>
+    <div id="pairs"></div>
+    <h2 style="margin-top:14px">Words used less often</h2>
+    <div id="falling"></div>
+  </div>
+</section>
+
+<section class="grid" style="margin-top:16px">
+  <div class="card">
+    <div class="tag t">Review text · classifier</div><h2>Themes that show up together</h2>
+    <div class="cap">How much more often two themes appear in the same komoot review than chance would predict (lift, last 12 months). Themes ≥1% share only.</div>
+    <div id="cooc" style="overflow-x:auto"></div>
+  </div>
+</section>
+
+<footer id="foot"></footer>
+</div>
+<div class="tip" id="tip"></div>
+
+<script src="data/dashboard_data.js"></script>
+<script src="data/my_dashboard_data.js"></script>  <!-- written by the notebook; overrides the line above if it exists -->
+<script>
+const D = window.DASHBOARD_DATA, M = D.meta.months, FOCAL = D.meta.focal;
+const CUR = M.indexOf(D.meta.current_month);
+const S = {store: "play", range: 24, theme: null};
+const NAMES = {account_data:"Account & data",app_update:"Updates broke things",community:"Community",device_platform:"Device, GPS & battery",
+ entitlement_violation:"Paid features withheld",exit_intent:"Leaving / switching",feature_removed:"Features removed",feature_request:"Feature requests",
+ integrations:"Integrations (watches etc.)",other:"Other",positive_value:"Positive value",price:"Price & value",privacy_data:"Privacy",
+ product:"Core product",subscription_ops:"Subscription handling",support:"Support",trust_brand:"Trust & brand",upsell_pressure:"Upsell pressure & ads"};
+const APPN = {komoot:"komoot",mapycz:"Mapy.com",organicmaps:"Organic Maps",bergfex:"bergfex",swisstopo:"swisstopo",alpenvereinaktiv:"alpenvereinaktiv",
+ outdooractive:"Outdooractive",strava:"Strava",relive:"Relive",bikemap:"Bikemap",osmand:"OsmAnd",mapsme:"MAPS.ME",alltrails:"AllTrails",
+ wikiloc:"Wikiloc",locusmap:"Locus Map",schweizmobil:"SchweizMobil",gurumaps:"Guru Maps",gaiagps:"Gaia GPS",hiiker:"HiiKER"};
+const EVENTS = [["2025-02","Paywall, acquisition"],["2025-03",""],["2025-09","Redesign"]];   // Mar 25 = acquisition, line only (too close to label)
+const $ = id => document.getElementById(id);
+const tip = $("tip");
+const f2 = v => v==null ? "—" : v.toFixed(2);
+const pct = (v,d=1) => v==null ? "—" : (v*100).toFixed(d)+"%";
+const sgn = (v,fmt) => v==null ? "—" : (v>0?"+":v<0?"−":"±")+fmt(Math.abs(v));
+const cls = (v,good=1) => v==null||Math.abs(v)<1e-9 ? "flat" : (v*good>0?"up":"down");
+const mlab = m => { const [y,mo]=m.split("-"); return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+mo-1]+" "+y.slice(2); };
+const NS = "http://www.w3.org/2000/svg";
+function el(tag, attrs={}, parent){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; }
+function showTip(html, ev){ tip.innerHTML=html; tip.style.opacity=1; const x=Math.min(ev.clientX+14, innerWidth-280); tip.style.left=x+"px"; tip.style.top=(ev.clientY+14)+"px"; }
+function hideTip(){ tip.style.opacity=0; }
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+/* ---------- generic line chart ---------- */
+function lineChart(host, {months, series, yMin, yMax, yFmt=v=>v.toFixed(1), height=260, bars=null, events=true, partialIdx=null, ticks=5}) {
+  host.innerHTML = "";
+  const W = Math.max(host.clientWidth, 300), H = height, padL=36, padR=10, padT=10, padB = bars ? 64 : 24;
+  const svg = el("svg",{width:W,height:H,viewBox:`0 0 ${W} ${H}`},host);
+  const n = months.length, x = i => padL + (n<=1?0:i*(W-padL-padR)/(n-1));
+  const ph = H-padT-padB, y = v => padT + (1-(v-yMin)/(yMax-yMin))*ph;
+  for (let k=0;k<=ticks;k++){ const v=yMin+(yMax-yMin)*k/ticks; el("line",{x1:padL,x2:W-padR,y1:y(v),y2:y(v),stroke:css("--line"),"stroke-width":1},svg);
+    el("text",{x:padL-6,y:y(v)+4,"text-anchor":"end"},svg).textContent=yFmt(v); }
+  const step = Math.ceil(n/8);
+  months.forEach((m,i)=>{ if(i%step===0||i===n-1){ const t=el("text",{x:x(i),y:H-padB+16,"text-anchor":"middle"},svg); t.textContent=mlab(m);} });
+  if (events) EVENTS.forEach(([m,l])=>{ const i=months.indexOf(m); if(i<0) return;
+    el("line",{x1:x(i),x2:x(i),y1:padT,y2:H-padB,stroke:css("--line2"),"stroke-dasharray":"2 3"},svg);
+    const t=el("text",{x:x(i)+3,y:padT+10,"font-size":"10"},svg); t.textContent=l; });
+  if (partialIdx!=null && partialIdx<n) el("rect",{x:x(partialIdx-1),y:padT,width:x(partialIdx)-x(partialIdx-1),height:ph,fill:css("--line"),opacity:.45},svg);
+  if (bars){ const bmax=Math.max(1,...bars.values), bh=34, by=H-bh-4;
+    bars.values.forEach((v,i)=>{ const w=Math.max(1,(W-padL-padR)/n*0.7); el("rect",{x:x(i)-w/2,y:by+bh*(1-v/bmax),width:w,height:bh*v/bmax,fill:bars.color,opacity:.55},svg); });
+    const t=el("text",{x:padL-6,y:by+bh,"text-anchor":"end"},svg); t.textContent="n"; }
+  series.forEach(s=>{ let d="", pen=false;
+    s.values.forEach((v,i)=>{ if(v==null){pen=false;return;} d+=(pen?"L":"M")+x(i).toFixed(1)+","+y(v).toFixed(1); pen=true; });
+    el("path",{d,fill:"none",stroke:s.color,"stroke-width":s.width||2,"stroke-dasharray":s.dash||"","stroke-linejoin":"round","stroke-linecap":"round",opacity:s.opacity??1},svg);
+    if (s.dots) s.values.forEach((v,i)=>{ if(v!=null) el("circle",{cx:x(i),cy:y(v),r:2.2,fill:s.color},svg); });
+  });
+  const cross = el("line",{y1:padT,y2:H-padB,stroke:css("--ink"),"stroke-width":1,opacity:0},svg);
+  const hit = el("rect",{x:padL,y:0,width:W-padL-padR,height:H,fill:"transparent"},svg);
+  hit.addEventListener("mousemove",ev=>{ const r=svg.getBoundingClientRect(); const i=Math.round((ev.clientX-r.left-padL)/((W-padL-padR)/(n-1||1)));
+    if(i<0||i>=n) return; cross.setAttribute("x1",x(i)); cross.setAttribute("x2",x(i)); cross.setAttribute("opacity",.25);
+    let h=`<b>${mlab(months[i])}</b>`+(partialIdx===i?" · partial":"");
+    series.filter(s=>s.name).forEach(s=>{ h+=`<br><span style="color:${s.color}">●</span> ${s.name}: ${s.values[i]==null?"—":yFmt(s.values[i],true)}`; });
+    if(bars) h+=`<br>n = ${bars.values[i].toLocaleString()}`; showTip(h,ev); });
+  hit.addEventListener("mouseleave",()=>{ hideTip(); cross.setAttribute("opacity",0); });
+}
+
+function spark(values, w=90, h=22, color=css("--text")) {
+  const vs = values.filter(v=>v!=null); if(!vs.length) return "";
+  const mx=Math.max(...vs)||1, n=values.length; let d="",pen=false;
+  values.forEach((v,i)=>{ if(v==null){pen=false;return;} d+=(pen?"L":"M")+(i*(w-2)/(n-1)+1).toFixed(1)+","+(h-2-(v/mx)*(h-4)).toFixed(1); pen=true; });
+  return `<svg width="${w}" height="${h}"><path d="${d}" fill="none" stroke="${color}" stroke-width="1.5"/></svg>`;
+}
+
+/* ---------- KPIs ---------- */
+function kpis(){
+  const R=D.ratings[S.store], f=R.focal, b=R.bench, i=CUR;
+  const cur=f.mean[i], prev=f.mean[i-1], ya=f.mean[i-12], bm=b.mean[i];
+  const last12 = f.mean.slice(i-11,i+1);
+  const cards = [
+    {tag:"Mean rating · "+mlab(M[i]), v:f2(cur)+"<small> ★</small>", d:`n = ${f.n[i].toLocaleString()} reviews`, s:spark(last12,110,24,css("--rate"))},
+    {tag:"Month over month", v:`<span class="${cls(cur-prev)}">${sgn(cur!=null&&prev!=null?cur-prev:null,f2)}</span>`, d:`vs ${mlab(M[i-1])}: ${f2(prev)} ★`},
+    {tag:"Year over year", v:`<span class="${cls(cur-ya)}">${sgn(cur!=null&&ya!=null?cur-ya:null,f2)}</span>`, d: ya==null?`no ${mlab(M[i-12])} data at n ≥ ${D.meta.min_n}`:`vs ${mlab(M[i-12])}: ${f2(ya)} ★`},
+    {tag:"Gap to category", v:`<span class="${cls(cur-bm)}">${sgn(cur!=null&&bm!=null?cur-bm:null,f2)}</span>`, d:`category ${f2(bm)} ★ · ${b.apps[i]} apps`},
+    {tag:"1-star share", v:pct(f.share1[i],0), d:`MoM ${sgn(f.share1[i]!=null&&f.share1[i-1]!=null?(f.share1[i]-f.share1[i-1])*100:null,v=>v.toFixed(0)+" pp")}`, s:spark(f.share1.slice(i-11,i+1),110,24,css("--neg"))},
+    S.store==="apple" ? {tag:"Review volume", v:f.n[i].toLocaleString(), d:"trend n/a · store feed caps history at ~500 per storefront"} :
+    {tag:"Review volume", v:f.n[i].toLocaleString(), d:`MoM ${sgn(f.n[i-1]?(f.n[i]/f.n[i-1]-1)*100:null,v=>v.toFixed(0)+"%")} · YoY ${sgn(f.n[i-12]?(f.n[i]/f.n[i-12]-1)*100:null,v=>v.toFixed(0)+"%")}`},
+  ];
+  $("kpis").innerHTML = cards.map(c=>`<div class="card kpi"><div class="tag">${c.tag}</div><div class="v">${c.v}</div><div class="d">${c.d}</div>${c.s?`<div style="margin-top:6px">${c.s}</div>`:""}</div>`).join("");
+}
+
+/* ---------- trend ---------- */
+function trend(){
+  const R=D.ratings[S.store], end=M.length, start=Math.max(0,end-S.range);
+  const ms=M.slice(start,end), sl=a=>a.slice(start,end);
+  const comp = D.meta.apps.filter(a=>a!==FOCAL);
+  const series = comp.map(a=>({values:sl(R.apps[a].mean),color:css("--line2"),width:1,opacity:.7}));
+  series.push({name:"Category benchmark",values:sl(R.bench.mean),color:css("--bench"),width:2,dash:"5 4"});
+  series.push({name:"komoot",values:sl(R.focal.mean),color:css("--rate"),width:2.8,dots:S.range<=24});
+  lineChart($("trend"),{months:ms,series,yMin:1,yMax:5,yFmt:(v,t)=>t?v.toFixed(2)+" ★":v.toFixed(0)+"★",height:300,ticks:4,
+    bars:{values:sl(R.focal.n),color:css("--rate-l")}, partialIdx:D.meta.partial_last_month?ms.length-1:null});
+  $("trendLegend").innerHTML=`<span><i style="--c:${css("--rate")}"></i>komoot</span><span><i class="dash" style="--c:${css("--bench")}"></i>Category (equal-weighted app mean)</span><span><i style="--c:${css("--line2")}"></i>Individual competitors</span>`;
+  $("trendCap").textContent=`Months with fewer than ${D.meta.min_n} komoot reviews are left blank. Shaded = partial month (data through ${D.meta.data_through}). Bars = komoot review volume.`;
+}
+
+/* ---------- league ---------- */
+let leagueSort={k:"mean",d:-1};
+function league(){
+  const rows=[...D.ratings[S.store].league].sort((a,b)=>((a[leagueSort.k]??-9)-(b[leagueSort.k]??-9))*leagueSort.d);
+  const r=D.meta.recent;
+  $("leagueCap").textContent=`${mlab(r[0])}–${mlab(r[r.length-1])} vs same months a year earlier. Apps with ≥ ${D.meta.min_app_n} reviews.`;
+  const cols=[["app","App"],["mean","★"],["yoy","YoY"],["share1","1★"],["n","n"]];
+  $("league").innerHTML=`<thead><tr>${cols.map(([k,l])=>`<th data-k="${k}">${l}${leagueSort.k===k?(leagueSort.d<0?" ↓":" ↑"):""}</th>`).join("")}</tr></thead><tbody>`+
+    rows.map(x=>`<tr class="${x.app===FOCAL?"focal":""}"><td>${APPN[x.app]||x.app}</td><td>${f2(x.mean)}</td><td class="${cls(x.yoy)}">${sgn(x.yoy,f2)}</td><td>${pct(x.share1,0)}</td><td>${x.n.toLocaleString()}</td></tr>`).join("")+"</tbody>";
+  $("league").querySelectorAll("th").forEach(th=>th.onclick=()=>{const k=th.dataset.k; if(k==="app")return; leagueSort={k,d:leagueSort.k===k?-leagueSort.d:-1}; league();});
+}
+
+/* ---------- themes ---------- */
+function themes(){
+  const T=D.themes[S.store], rows=T.rows.filter(r=>r.share12>=0.005 && r.gap!=null).sort((a,b)=>a.impact-b.impact);
+  if(!S.theme || !rows.find(r=>r.theme===S.theme)) S.theme=rows[0].theme;
+  const mx=Math.max(...rows.map(r=>r.share12));
+  $("themeCap").innerHTML=`komoot, last 12 complete months (n = ${T.n12.toLocaleString()}, mean ${f2(T.mean12)} ★). <b>Drag</b> = share × rating gap: how far the theme pulls the average down. Association, not effect. Click a row for its trend.`;
+  $("themes").innerHTML=`<thead><tr><th>Theme</th><th>Share</th><th></th><th title="Recent 3 mo vs same months last year">YoY</th><th title="Recent 3 mo, komoot minus competitors">vs cat.</th><th>★ with</th><th>Gap</th><th>Drag</th></tr></thead><tbody>`+
+   rows.map(r=>{ const yoy=r.share_recent!=null&&r.share_yago!=null?r.share_recent-r.share_yago:null, vc=r.share_recent!=null&&r.bench_recent!=null?r.share_recent-r.bench_recent:null;
+    return `<tr class="click ${r.theme===S.theme?"sel":""}" data-t="${r.theme}"><td>${NAMES[r.theme]||r.theme}</td><td>${pct(r.share12)}</td><td style="text-align:left"><span class="bar" style="width:${60*r.share12/mx}px"></span></td>
+     <td class="${cls(yoy,-1)}">${sgn(yoy==null?null:yoy*100,v=>v.toFixed(1)+" pp")}</td><td class="${cls(vc,-1)}">${sgn(vc==null?null:vc*100,v=>v.toFixed(1)+" pp")}</td>
+     <td>${f2(r.mean_with)}</td><td class="${cls(r.gap)}">${sgn(r.gap,f2)}</td><td class="${cls(r.impact)}">${sgn(r.impact,f2)}</td></tr>`;}).join("")+"</tbody>";
+  $("themes").querySelectorAll("tbody tr").forEach(tr=>tr.onclick=()=>{S.theme=tr.dataset.t; themes();});
+  themeDetail(); quad(rows);
+}
+function themeDetail(){
+  const r=D.themes[S.store].rows.find(x=>x.theme===S.theme), end=M.length, start=Math.max(0,end-S.range);
+  $("themeDetailTitle").textContent=NAMES[S.theme]+" over time";
+  // competitor series isn't stored monthly; show komoot series + recent category level as reference line
+  const ser=r.series.slice(start,end), mx=Math.max(0.05,...ser.filter(v=>v!=null), r.bench_recent||0)*1.15;
+  const bench=ser.map(()=>r.bench_recent);
+  lineChart($("themeDetail"),{months:M.slice(start,end),series:[{name:"Category (recent 3 mo)",values:bench,color:css("--bench"),dash:"5 4",width:1.5},{name:"komoot",values:ser,color:css("--text"),width:2.5}],
+    yMin:0,yMax:mx,yFmt:v=>(v*100).toFixed(0)+"%",height:190,ticks:4,partialIdx:D.meta.partial_last_month?ser.length-1:null});
+}
+function quad(rows){
+  const host=$("quad"); host.innerHTML="";
+  const W=Math.max(host.clientWidth,300),H=230,pl=40,pr=12,pt=10,pb=28, svg=el("svg",{width:W,height:H},host);
+  const xs=rows.map(r=>r.share12), xm=Math.max(...xs)*1.08, gs=rows.map(r=>r.gap), gmin=Math.min(-2,...gs)-.1, gmax=Math.max(.5,...gs)+.1;
+  const x=v=>pl+Math.sqrt(v/xm)*(W-pl-pr), y=v=>pt+(gmax-v)/(gmax-gmin)*(H-pt-pb);
+  [0.01,0.05,0.1,0.25,0.5].filter(v=>v<xm).forEach(v=>{el("line",{x1:x(v),x2:x(v),y1:pt,y2:H-pb,stroke:css("--line")},svg); el("text",{x:x(v),y:H-pb+14,"text-anchor":"middle"},svg).textContent=(v*100)+"%";});
+  for(let g=Math.ceil(gmin);g<=gmax;g+=0.5){ el("line",{x1:pl,x2:W-pr,y1:y(g),y2:y(g),stroke:g===0?css("--line2"):css("--line")},svg); el("text",{x:pl-6,y:y(g)+4,"text-anchor":"end"},svg).textContent=(g>0?"+":"")+g.toFixed(1); }
+  el("text",{x:W-pr,y:H-2,"text-anchor":"end"},svg).textContent="share of reviews (√ scale) →";
+  el("text",{x:pl+4,y:pt+10},svg).textContent="★ gap";
+  const nm=Math.max(...rows.map(r=>r.n12));
+  rows.forEach(r=>{ const c=el("circle",{cx:x(r.share12),cy:y(r.gap),r:3+9*Math.sqrt(r.n12/nm),fill:r.gap<0?css("--text"):css("--pos"),opacity:r.theme===S.theme?.95:.45,stroke:r.theme===S.theme?css("--ink"):"none"},svg);
+    c.style.cursor="pointer"; c.onclick=()=>{S.theme=r.theme;themes();};
+    c.onmousemove=ev=>showTip(`<b>${NAMES[r.theme]}</b><br>share ${pct(r.share12)} · gap ${sgn(r.gap,f2)} ★<br>${r.n12.toLocaleString()} reviews`,ev); c.onmouseleave=hideTip;
+    if(r.share12>0.04||r.theme===S.theme) el("text",{x:x(r.share12)+8,y:y(r.gap)+4,fill:css("--soft")},svg).textContent=NAMES[r.theme]; });
+}
+
+/* ---------- topics ---------- */
+function topics(){
+  const T=D.topics[S.store];
+  if(!T || T.insufficient){
+    const msg=`<div class="empty">Not enough German App Store reviews for a stable trend: ${T?T.n_recent:0} recent vs ${T?T.n_base:0} baseline (need ≥ 150 / 300).<br>The App Store feed only returns the latest ~500 reviews per storefront, so history is thin.</div>`;
+    ["rising","pairs","falling"].forEach(id=>$(id).innerHTML=id==="rising"?msg:""); $("topicCap").textContent=""; return; }
+  const r=D.meta.recent,b=D.meta.base;
+  $("topicCap").innerHTML=`Share of komoot reviews containing the term, ${mlab(r[0])}–${mlab(r[r.length-1])} (n = ${T.n_recent.toLocaleString()}) vs the 12 months before (n = ${T.n_base.toLocaleString()}). Ranked by log-odds z. Chip = theme the term co-occurs with most.`+(S.store==="all"?" <b>Pooled view mixes store composition shifts into the trend.</b>":"");
+  const row=x=>`<tr><td><span class="term">${x.term}</span></td><td>${spark(x.spark,80,20)}</td><td>${pct(x.share_recent)} <span style="color:var(--muted)">← ${pct(x.share_base)}</span></td><td>${x.z.toFixed(1)}</td><td>${f2(x.mean_star)}</td><td style="text-align:left">${x.theme?`<span class="chip">${NAMES[x.theme]}</span>`:""}</td></tr>`;
+  const head=`<thead><tr><th>Term</th><th>24 mo</th><th>Now ← before</th><th>z</th><th>★</th><th style="text-align:left">Linked theme</th></tr></thead>`;
+  $("rising").innerHTML=`<div class="scroll"><table>${head}<tbody>${T.rising.slice(0,18).map(row).join("")}</tbody></table></div>`;
+  $("falling").innerHTML=`<table>${head}<tbody>${T.falling.slice(0,8).map(row).join("")}</tbody></table>`;
+  $("pairs").innerHTML=`<table><thead><tr><th>Pair</th><th>Reviews</th><th>Now ← before</th><th>Growth</th><th title="How much more often than chance">Lift</th></tr></thead><tbody>`+
+    T.pairs.slice(0,12).map(p=>`<tr><td><span class="term">${p.a}</span> + <span class="term">${p.b}</span></td><td>${p.n}</td><td>${pct(p.share_recent)} <span style="color:var(--muted)">← ${pct(p.share_base)}</span></td><td>${p.growth==null?"new":"×"+p.growth.toFixed(1)}</td><td>${p.lift.toFixed(1)}</td></tr>`).join("")+"</tbody></table>";
+}
+
+/* ---------- co-occurrence heatmap ---------- */
+function cooc(){
+  const T=D.themes[S.store], th=D.meta.themes, keep=th.map((t,i)=>i).filter(i=>T.rows[i].share12>=0.01);
+  const host=$("cooc"); host.innerHTML="";
+  const cell=34, lab=170, W=lab+cell*keep.length+10, H=lab*0.0+cell*keep.length+120;
+  const svg=el("svg",{width:W,height:H},host);
+  keep.forEach((i,a)=>{ el("text",{x:lab-8,y:cell*a+cell/2+4,"text-anchor":"end",fill:css("--soft")},svg).textContent=NAMES[th[i]];
+    const t=el("text",{x:lab+cell*a+cell/2,y:cell*keep.length+10,"text-anchor":"end",transform:`rotate(-45 ${lab+cell*a+cell/2} ${cell*keep.length+10})`,fill:css("--soft")},svg); t.textContent=NAMES[th[i]];
+    keep.forEach((j,b)=>{ const L=T.cooc.lift[i][j], cnt=T.cooc.count[i][j];
+      const v=L==null?0:Math.max(-1,Math.min(1,Math.log2(L)/2.5));
+      const fill=L==null?css("--paper"):v>=0?`rgba(63,106,158,${0.06+0.7*v})`:css("--paper");
+      const rc=el("rect",{x:lab+cell*b,y:cell*a,width:cell-2,height:cell-2,rx:3,fill},svg);
+      if(L!=null && L>=2){ el("text",{x:lab+cell*b+cell/2-1,y:cell*a+cell/2+4,"text-anchor":"middle",fill:css("--ink"),"font-size":"10"},svg).textContent=L.toFixed(1); }
+      rc.onmousemove=ev=>showTip(i===j?`<b>${NAMES[th[i]]}</b>`:`<b>${NAMES[th[i]]}</b> + <b>${NAMES[th[j]]}</b><br>${L==null?"too few reviews":"lift ×"+L.toFixed(2)}<br>${cnt.toLocaleString()} reviews with both`,ev); rc.onmouseleave=hideTip; }); });
+}
+
+function footer(){
+  const m=D.meta;
+  $("stamp").textContent=`${m.sources[S.store]||"Google Play + App Store (DACH)"} · ${m.n_focal[S.store].toLocaleString()} komoot reviews, ${m.n_reviews[S.store].toLocaleString()} incl. ${m.apps.length-1} competitors · data through ${m.data_through} · built ${m.built.replace("T"," ")}`;
+  $("foot").innerHTML=`<b>Method.</b> Monthly points need ≥ ${m.min_n} komoot reviews; competitor apps ≥ ${m.min_app_n}. Category benchmark = unweighted mean of competitor app means (≥ 3 apps), so no single app dominates. KPIs use the last complete month (${mlab(m.current_month)}). Themes come from the review classifier (${m.themes.length} themes, binary labels); rating gap and drag are associations, not causal effects, and a review can carry several themes. Topics: German unigrams and bigrams, document frequency, log-odds with an informative Dirichlet prior (Monroe et al. 2008); non-German text removed. App Store history is limited by the store feed (~500 latest reviews per storefront), so its trends start mid-2026 for DE. Event markers: paywall change Feb 2025, acquisition Mar 2025, redesign Sep 2025. Data file: <code>data/dashboard_data.js</code>, regenerated by <code>build_dashboard_data.py</code>.`;
+}
+
+function render(){ document.querySelectorAll("#storeSeg button").forEach(b=>b.classList.toggle("on",b.dataset.v===S.store));
+  document.querySelectorAll("#rangeSeg button").forEach(b=>b.classList.toggle("on",+b.dataset.v===S.range));
+  footer(); kpis(); trend(); league(); themes(); topics(); cooc(); }
+$("storeSeg").onclick=e=>{ if(e.target.dataset.v){S.store=e.target.dataset.v; render();} };
+$("rangeSeg").onclick=e=>{ if(e.target.dataset.v){S.range=+e.target.dataset.v; render();} };
+let rt; addEventListener("resize",()=>{clearTimeout(rt); rt=setTimeout(render,150);});
+render();
+</script>
+</body>
+</html>

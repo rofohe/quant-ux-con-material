@@ -1,0 +1,70 @@
+theme,subtheme,definition,example phrase,boundary note
+account_data,data_loss,"User content lost: tours, tracks, history, after device change or update.",meine geplanten Touren sind weg,
+account_data,login,"Signing in, passwords, 2FA, captcha, account access.",kann mich nicht mehr anmelden,
+app_update,ui_relearning,An update moved things; the user must relearn the interface.,wo ist der Umschalter auf die alte Version,
+app_update,version_regression,"An update broke or worsened something: crashes after updating, relaunch regressions, progressive decline across updates.",wird mit jedem Update schlechter,Tag BOTH this and the specific thing that broke.
+community,community_size,Value from many people being on the platform; loss of that reach.,kaum noch eine App für alle,THE NETWORK EFFECT. Central to the lock-in argument.
+community,social_graph,"Friends, following, sharing with known people, seeing others' activity.",jemand dem du folgst hat eine Tour gemacht,
+community,ugc_tours,"Routes created and shared by other users, as benefit or problem.",Touren von anderen Nutzern sind super,The SOCIAL LAYER. Accuracy of the data = content_quality.
+device_platform,battery,"Battery drain, overheating, power-saving behaviour of the phone or watch.","erhöhter Akkuverbrauch, Powerbank mitführen",
+device_platform,gps_signal,"The GPS fix itself: no signal, position lost, position jumping, 'kein GPS'.",andauernd Meldung kein GPS,The SIGNAL = here. Wrong instructions = navigation_accuracy. Recording stops = activity_tracking.
+device_platform,os_compat,"Phone OS or model issues: Android/iOS version, install failures, rotation, system UI.",startet immer nur im Hochformat,The PHONE. External hardware = integrations.
+dissatisfaction_general,-,Diffuse negative sentiment with no identifiable object.,nur noch Schrott,"The mirror of positive_value/-. If an object IS named, code that instead."
+entitlement_violation,access_revoked,"Paid, then locked out or entitlement deleted.","die gekaufte App nun zu sperren, das ist Enteignung",THE SHARP CASE.
+entitlement_violation,lifetime_purchase_ignored,Bought a one-time/lifetime package; now asked to pay again or upsold anyway.,Weltpaket gekauft und jetzt wieder zur Kasse,THE SHARP CASE. Prior purchase explicit. Endowment-effect evidence.
+entitlement_violation,paywalled,A feature that was available now requires payment.,Neuerdings nur noch mit Paket anschaubar,Prior purchase NOT stated but a capability was taken behind payment. Free tier always crippled = price/freemium_limits.
+entitlement_violation,price_increase,The price went up for existing users.,Preis nach der Erhöhung grenzte an Wucher,
+exit_intent,announced_departure,States they are leaving or have left.,Ich bin weg,Already uninstalled = uninstalled.
+exit_intent,conditional_threat,Will leave if something does not change; latent churn.,mal schauen wie lange noch,The reachable group.
+exit_intent,uninstalled,Reports having already deleted the app.,gleich wieder deinstalliert,
+feature_loss,degraded,"Something still exists but works worse, not tied to a specific update.","war mal besser, jetzt schlechter",Tied to an update = app_update/version_regression.
+feature_loss,removed,"Something is gone entirely, no payment involved.",Funktion gibt es nicht mehr,Gone for FREE users too. Gone behind payment = entitlement_violation/paywalled.
+feature_request,-,Something wanted that never existed.,Schrittzähler fehlt mir noch,ABSENCE framing. Had it and lost it = feature_loss.
+integrations,bike_computer,"Garmin Edge, Wahoo, Kiox head units: pairing and route transfer.",Kopplung mit Garmin gelang,
+integrations,cross_device,"Works on one device or channel but not another: phone vs PC vs tablet, transfer between them.",geht nur mit einem PC,MERGED in v1.2 from platform_parity + device_compatability + device_usability.
+integrations,ebike_system,"E-bike systems and displays: Bosch Flow, Cobi, Kiox, manufacturer apps.",funktioniert gut mit meinem Bosch Flow,
+integrations,sensors,"External sensors: ANT+, heart-rate monitors, cadence, power meters.",wie kann ich Ant+ Geräte hinzufügen,
+integrations,smartwatch,"Watches: Garmin, Samsung, Apple, wearOS. Pairing, readability, standalone use.","auf der Uhr nur Pfeile, keine Karte",
+integrations,third_party_sync,"Other services: Samsung Health, Strava, Android Auto, cloud sync.",speichert Daten nicht bei Samsung Health,
+other,-,Fits nothing. Explain in coder_note.,,Recurring 'other' is how new themes get proposed.
+other,competitor_preference,"Names another app as better, without a specific pain.",Outdooractive ist viel besser,Positive framing = positive_value/preference_over_competitor.
+positive_value,-,"Whole-app positive sentiment, no object named.",beste App aller Zeiten,
+positive_value,continuous_improvement,The app is getting better over time.,immer wieder gute Verbesserungen,
+positive_value,enables_delight,"The outdoor experience the app made possible: discovery, places found, confidence to explore.","bin an Orte gekommen, die ich sonst nicht finde","About the EXPERIENCE, not the app. Praise of a feature = product + pos."
+positive_value,help_received,Support actually helped.,Danke für die rasche und kompetente Unterstützung,
+positive_value,preference_over_competitor,Explicitly better than a named alternative.,deutlich besser als Google Maps,Positive mirror of other/competitor_preference.
+price,dark_pattern,"Deceptive commercial design: hidden terms, misleading price display, accidental purchase, cancellation made hard.",Beim Start erscheint eine Abofalle,DECEPTION. Payment method failing = subscription_ops/payment_method.
+price,freemium_tier,"Comment on the FREE tier, either direction. neg = crippled, core functions locked. pos = free version is sufficient/generous.",Gratisversion ist bereits sehr gut  /  Kostenlose Version ist ziemlich mies,VALENCE carries the direction. No prior purchase mentioned. Prior purchase = entitlement_violation.
+price,subscription_model,"Objection to subscriptions as a model, not to the amount.",Abonnements jeglicher Art sind RAUB,
+price,value_for_money,What is charged is too much for what is delivered.,viel zu teuer für das Gebotene,EVALUATIVE. Billing that malfunctions = subscription_ops.
+privacy_data,data_collection,"What data is collected or required, and default visibility.",wofür braucht ihr das Geschlecht,
+privacy_data,forced_registration,Cannot use the app without creating an account.,ohne Konto keine Offlinekarten mehr,
+product,-,"Positive about functionality, no specific feature named.",funktioniert alles gut,Functionality praise = here + pos. Experience enabled = positive_value/enables_delight.
+product,activity_tracking,"Recording a tour: route, distance, time, elevation captured correctly and without stopping.",Aufzeichnung bricht ständig ab,Recording FAILS = here. Recording feature REMOVED = feature_loss.
+product,content_coverage,"Breadth and availability of route/map data by geography: worldwide, every region, 'überall'.","Gutes Kartenmaterial, weltweit",COVERAGE (is there data here). Accuracy = content_quality. Up-to-dateness = content_currency. Only code community if OTHER PEOPLE are mentioned.
+product,content_currency,"Map/trail data out of date: paths closed, gone, or newly built and missing.","Wanderwege nicht aktuell, gesperrt",STALE data. WRONG/implausible data = content_quality.
+product,content_quality,"Intrinsic quality of route/map data: accuracy, plausibility, detail, difficulty ratings.",utopische und weltfremde Wandertouren,The DATA. Who made it / sharing = community.
+product,localisation,"Language of interface, terms, voice or content.",Nutzungsbedingungen nur auf Englisch,
+product,map_rendering,"How the map is drawn: contrast, labels, symbols, zoom, legibility of the map.",Kartenmaterial schwer zu interpretieren,The MAP. The app's chrome and layout = ui_design.
+product,media,"Photos and videos: Tour Story, slideshows, photo order, uploads, rendering.",Story nur schwarz,
+product,navigation_accuracy,"Turn-by-turn guidance while moving: correct direction, timely instructions, correct position.","Navigation oft falsch, zu spät",Wrong instruction = here. Bad ROUTE CHOICE = recommendation_quality.
+product,offline_maps,Downloading and using maps or tours without a connection.,offline Karte funktioniert nicht mehr,Offline BROKEN = here. Offline behind paywall = entitlement_violation/paywalled.
+product,performance,"Speed and stability: crashes, hangs, freezes, slow loading, malfunction needing reinstall.",Programm setzt manchmal aus,Crash right after an update = also app_update/version_regression.
+product,recommendation_quality,"Quality of routes the app proposes: sensible, suitable for the sport, no absurd detours.",schickt mich unnötig durch Siedlungen,The app's CHOICE of path. Path no longer exists = content_currency.
+product,route_planning,"Building or editing a route: waypoints, shaping the path, getting the route intended.",Route lässt sich nicht anpassen,Planning mechanics = here. Quality of a suggested route = recommendation_quality.
+product,search_discovery,"Finding tours, places or features inside the app.",Touren nicht mehr findet,Can't FIND = here. Found but awkward = usability.
+product,ui_design,"Appearance and arrangement: layout, density, fonts, colours, clutter.",die App ist absolut überladen,HOW IT LOOKS. Whether you can do the job = usability.
+product,usability,"Can the user complete the task: complexity, steps, intuitiveness.","umständlich, null intuitiv",TASK COMPLETION. Appearance = ui_design. Speed = performance.
+product,voice_navigation,"Spoken instructions: voice quality, volume, timing, TTS.",Die K.I. Sprache ist schrecklich,
+subscription_ops,payment_method,"Payment mechanics: method rejected, renewal, cancellation, refund, charge errors.",mit Klarna funktioniert es auch nicht,MECHANICAL failure. Deception = price/dark_pattern.
+support,help_seeking,The review is being used to ask for help.,Wer kann helfen???,"A support-failure signal, not a pain itself."
+support,unresponsive,"Support does not reply, or replies uselessly; no human reachable; poor docs.",nur die gleichen Hinweise,Support HELPED = positive_value/help_received.
+switching_barrier,data_portability,"Cannot take their content to another app, or the new app cannot accept it.","200 Touren als gpx, kann sie nicht verwenden",Usually found in the COMPETITOR's reviews.
+switching_barrier,other_barrier,Any other reason they stay despite dissatisfaction.,sonst wäre ich längst weg,Tell = COUNTERFACTUAL framing.
+trust_brand,acquisition_sentiment,Comment on the ownership change or the new owner.,seit dem Verkauf geht es nur um Geld,Tag price too if the amount is also criticised.
+trust_brand,communication,How the company informs or fails to inform users.,nicht darüber informiert worden,
+trust_brand,enshittification,Explicit accusation of deliberate degradation for profit.,die App wird absichtlich verschlechtert,Users sometimes use this exact English word.
+trust_brand,team_loss,Loss of the original team or developers.,fast das ganze Team entlassen,
+upsell_pressure,ad_volume,Amount of advertising inside the app.,"Werbung, Werbung, Werbung",
+upsell_pressure,unwanted_content,"Pushed content not asked for: challenges, news, notifications, sponsored suggestions.","bescheuerte Challenges, völlig übergriffig",
+upsell_pressure,upsell_frequency,"How often the user is prompted to buy: on launch, mid-tour, every screen.",bei jedem App Start der Premium Hinweis,INTRUSIVENESS. The amount charged = price.
